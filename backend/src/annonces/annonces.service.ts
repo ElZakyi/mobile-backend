@@ -17,7 +17,9 @@ export class AnnoncesService {
   }
 
   async findAll() {
-    return await this.annonceRepository.find();
+    return await this.annonceRepository.find({
+      order : {createdAt: 'DESC'}
+    });
   }
 
   async findOne(id: string) {

@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('annonces')
 export class Annonce {
@@ -12,4 +12,6 @@ export class Annonce {
     ville : string
     @Column({nullable: true})
     photo : string
+    @CreateDateColumn()
+    createdAt : Date
 }
