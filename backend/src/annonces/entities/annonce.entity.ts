@@ -1,7 +1,10 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "../../users/entities/user.entity";
 
 @Entity('annonces')
 export class Annonce {
+    @ManyToOne(()=>User)
+    author : User
     @PrimaryGeneratedColumn('uuid')
     id : string
     @Column()

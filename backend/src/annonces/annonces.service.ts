@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateAnnonceDto } from './dto/create-annonce.dto';
 import { UpdateAnnonceDto } from './dto/update-annonce.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,8 +12,8 @@ export class AnnoncesService {
     private annonceRepository : Repository<Annonce>
   ){}
   
-  async create(createAnnonceDto: CreateAnnonceDto) {
-    return await this.annonceRepository.save(createAnnonceDto);
+  async create(createAnnonceDto: CreateAnnonceDto, userId: string) {
+    return await this.annonceRepository.save({...createAnnonceDto, author : {id : userId}});
   }
 
   async findAll() {
@@ -25,12 +25,21 @@ export class AnnoncesService {
   async findOne(id: string) {
     return await this.annonceRepository.findOneBy({id});
   }
-
+  async findByAuth(idUser: string){
+    return await this.annonceRepository.find({
+      where : {author : {id : idUser}},
+      order : {createdAt : 'DESC'}
+    });
+  }
   async update(id: string, updateAnnonceDto: UpdateAnnonceDto) {
     return await this.annonceRepository.update(id, updateAnnonceDto);
   }
 
-  async remove(id: string) {
-    return await this.annonceRepository.delete(id);
+  async remove(userId: string, idAnnonce: string) {
+    const annonce = await this.annonceRepository.findOne({where: {id : idAnnonce}, relations:{author: true}})
+    if(userId !== annonce?.author.id){
+      throw new ForbiddenException("Vous n'etes pas l'autheur de cette annonce");
+    }
+    return await this.annonceRepository.delete(idAnnonce);
   }
 }
