@@ -42,4 +42,8 @@ export class AnnoncesService {
     }
     return await this.annonceRepository.delete(idAnnonce);
   }
+   uploadFile(file: Express.Multer.File){
+    return { 'url': `${process.env.APP_URL}/uploads/${file.filename}` }
+
+  }
 }

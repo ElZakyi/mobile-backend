@@ -1,8 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { AnnoncesService } from './annonces.service';
 import { CreateAnnonceDto } from './dto/create-annonce.dto';
 import { UpdateAnnonceDto } from './dto/update-annonce.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
+import type { Express } from 'express';
+import { diskStorage, type Multer } from 'multer';
+import { extname } from 'path';
 
 @Controller('annonces')
 export class AnnoncesController {
@@ -41,4 +45,19 @@ export class AnnoncesController {
   remove(@Req() req : any, @Param('id') idAnnonce: string) {
     return this.annoncesService.remove(req.user.userId , idAnnonce);
   }
+  @Post('upload')
+  @UseGuards(AuthGuard('jwt'))
+  @UseInterceptors(FileInterceptor('file',{
+    storage: diskStorage({
+      destination : 'uploads/',
+      filename : (req, file, callback) => {
+        const nomUnique = Date.now() + extname(file.originalname);
+        callback(null, nomUnique);
+      }
+    })
+  }))
+  uploadFile(@UploadedFile() file : Express.Multer.File){
+    return this.annoncesService.uploadFile(file);
+  }
+
 }
