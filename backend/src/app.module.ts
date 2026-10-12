@@ -7,6 +7,9 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { AppGateway } from './app.gateway';
+import { ConversationsModule } from './conversations/conversations.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
   imports: [
@@ -27,9 +30,11 @@ import { join } from 'path';
     ServeStaticModule.forRoot({
       rootPath : join(__dirname,'..','/uploads'),
       serveRoot :'/uploads'
-    })
+    }),
+    ConversationsModule,
+    MessagesModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AppGateway],
 })
 export class AppModule {}

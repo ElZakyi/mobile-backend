@@ -23,8 +23,11 @@ export class AnnoncesService {
   }
 
   async findOne(id: string) {
-    return await this.annonceRepository.findOneBy({id});
-  }
+  return await this.annonceRepository.findOne({
+    where: {id},
+    relations: {author: true}
+  });
+}
   async findByAuth(idUser: string){
     return await this.annonceRepository.find({
       where : {author : {id : idUser}},
