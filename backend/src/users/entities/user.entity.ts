@@ -12,4 +12,6 @@ export class User {
     password : string
     @CreateDateColumn()
     createdAt : Date
+    @Column({nullable: true})
+    pushToken: string
 }
