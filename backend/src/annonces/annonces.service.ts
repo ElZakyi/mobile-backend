@@ -4,7 +4,7 @@ import { UpdateAnnonceDto } from './dto/update-annonce.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Annonce } from './entities/annonce.entity';
 import { Repository } from 'typeorm';
-
+import { v2 as cloudinary } from 'cloudinary';
 @Injectable()
 export class AnnoncesService {
   constructor(
@@ -45,8 +45,12 @@ export class AnnoncesService {
     }
     return await this.annonceRepository.delete(idAnnonce);
   }
-   uploadFile(file: Express.Multer.File){
-    return { 'url': `${process.env.APP_URL}/uploads/${file.filename}` }
+  async uploadFile(file: Express.Multer.File) {
+    const b64 = file.buffer.toString('base64');
+    const dataURI = `data:${file.mimetype};base64,${b64}`;
+    console.log('CLOUDINARY_URL:', process.env.CLOUDINARY_URL);
+    const result = await cloudinary.uploader.upload(dataURI);
 
+    return { url: result.secure_url };
   }
 }

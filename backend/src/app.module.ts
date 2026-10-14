@@ -10,16 +10,14 @@ import { join } from 'path';
 import { AppGateway } from './app.gateway';
 import { ConversationsModule } from './conversations/conversations.module';
 import { MessagesModule } from './messages/messages.module';
-
+import {ConfigModule} from '@nestjs/config';
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host : 'localhost',
-      port : 5433,
-      username : 'souk_user',
-      password : 'souk_password',
-      database : 'souk_db',
+      url: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
       autoLoadEntities : true,
       synchronize: true
 

@@ -5,7 +5,7 @@ import { UpdateAnnonceDto } from './dto/update-annonce.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Express } from 'express';
-import { diskStorage, type Multer } from 'multer';
+import { diskStorage, memoryStorage, type Multer } from 'multer';
 import { extname } from 'path';
 
 @Controller('annonces')
@@ -48,16 +48,10 @@ export class AnnoncesController {
   @Post('upload')
   @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(FileInterceptor('file',{
-    storage: diskStorage({
-      destination : 'uploads/',
-      filename : (req, file, callback) => {
-        const nomUnique = Date.now() + extname(file.originalname);
-        callback(null, nomUnique);
-      }
-    })
+    storage: memoryStorage()
   }))
-  uploadFile(@UploadedFile() file : Express.Multer.File){
-    return this.annoncesService.uploadFile(file);
+  async uploadFile(@UploadedFile() file : Express.Multer.File){
+    return await this.annoncesService.uploadFile(file);
   }
 
 }
